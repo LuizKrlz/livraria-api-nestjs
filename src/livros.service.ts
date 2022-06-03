@@ -1,31 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Livro } from './livro.model';
 
 @Injectable()
 export class LivrosService {
-  livros: Livro[] = [
-    new Livro('LIV01', 'Livro TDD e BDD na prática', 29.9),
-    new Livro('LIV02', 'Livro Iniciando com Flutter', 39.9),
-    new Livro('LIV03', 'Inteligência artificial como serviço', 29.9),
-  ];
+  constructor(
+    @InjectRepository(Livro) private livroRepository: Repository<Livro>,
+  ) {}
 
-  obterTodos(): Livro[] {
-    return this.livros;
+  async obterTodos(): Promise<Livro[]> {
+    return await this.livroRepository.find();
   }
 
-  obterUm(id: number): Livro {
-    return this.livros[0];
+  async obterUm(id: string): Promise<Livro> {
+    return this.livroRepository.findOneBy({ id });
   }
 
-  criar(livro: Livro) {
-    this.livros.push(livro);
+  async criar(livro: Livro) {
+    try {
+      await this.livroRepository.save(livro);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  alterar(livro: Livro): Livro {
-    return livro;
+  async alterar(id: string, livro: Livro): Promise<UpdateResult> {
+    return await this.livroRepository.update({ id }, livro);
   }
 
-  apagar(id: number) {
-    this.livros.pop();
+  async apagar(id: string) {
+    const livro: Livro = await this.obterUm(id);
+
+    await this.livroRepository.delete(livro);
   }
 }

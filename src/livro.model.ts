@@ -1,12 +1,19 @@
-export class Livro {
-  id: number;
-  codigo: string;
-  nome: string;
-  preco: number;
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-  constructor(codigo: string, nome: string, preco: number) {
-    this.codigo = codigo;
-    this.nome = nome;
-    this.preco = preco;
-  }
+@Entity()
+export class Livro {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ nullable: false })
+  codigo: string;
+
+  @Column({ nullable: false })
+  nome: string;
+
+  @Column({
+    type: 'decimal',
+    nullable: false,
+  })
+  preco: number;
 }

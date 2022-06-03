@@ -7,6 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { UpdateResult } from 'typeorm';
 import { Livro } from './livro.model';
 import { LivrosService } from './livros.service';
 
@@ -15,24 +16,23 @@ export class LivrosController {
   constructor(private livrosService: LivrosService) {}
 
   @Get()
-  obterTodos(): Livro[] {
-    return this.livrosService.obterTodos();
+  async obterTodos(): Promise<Livro[]> {
+    return await this.livrosService.obterTodos();
   }
 
   @Get(':id')
-  obterUm(@Param() params): Livro {
+  obterUm(@Param() params): Promise<Livro> {
     return this.livrosService.obterUm(params.id);
   }
 
   @Post()
-  criar(@Body() produto: Livro) {
-    produto.id = 100;
-    this.livrosService.criar(produto);
+  async criar(@Body() produto: Livro) {
+    await this.livrosService.criar(produto);
   }
 
   @Put(':id')
-  alterar(@Param() params, @Body() livro: Livro): Livro {
-    return this.livrosService.alterar(livro);
+  async alterar(@Param() params, @Body() livro: Livro): Promise<UpdateResult> {
+    return this.livrosService.alterar(params.id, livro);
   }
 
   @Delete(':id')
